@@ -1,0 +1,12 @@
+.form{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.submit__btn{
+    align-self: flex-end;
+    justify-self: flex-end;
+    width: 8rem;
+    padding: 0.5rem;
+}

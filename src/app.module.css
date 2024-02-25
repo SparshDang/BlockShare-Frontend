@@ -1,0 +1,58 @@
+.center{
+    text-align: center;
+}
+
+.center > h1{
+    font-size: 4rem;
+    font-weight: 900;
+}
+
+.carousel{
+    margin: 10px auto ;
+    border: 1px solid red;
+    width: 30%;
+    min-height: max-content;
+    overflow: hidden;
+
+    border: 1px solid blue;
+    border-radius: 10px;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+
+    /* height: 200px; */
+
+    position:relative;
+}
+
+.carousel__inner{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.carousel__element{
+    width: 100%;
+    flex-basis: 0;
+    flex-grow: 1;
+    text-align: center;
+}
+
+.changing__button{
+    background: none;
+    border: none;
+    font-size: 10px;
+    color: rgba(0, 0, 0, 0.5);
+    align-self: flex-end;
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+}
+
+.changing__button:hover{
+    color: rgba(0, 0, 0, 1);
+}
