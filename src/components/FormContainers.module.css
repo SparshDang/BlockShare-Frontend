@@ -1,0 +1,58 @@
+.main{
+
+    border-radius: 10px;
+    display: flex;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+    position:relative;
+
+    margin: 10px;
+
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.form__outer__container{
+    flex: 1;
+    min-width: 300px;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    border: 1px solid #eeeeee;
+    border-radius: 15px;
+    padding: 1rem;
+    overflow: hidden;
+
+}
+
+.overlay{
+    height: 100%;
+    width: 100%;
+    background: linear-gradient(rgba(0,0,0,0.6),rgba(0,0,0,0.6));
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: grid;
+    place-items: center;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+.overlay:hover{
+    filter: brightness(150%);
+}
+
+.button{
+    height: 3rem;
+    padding: 0.6rem;
+    border-radius: 5px;
+    background-color: #9ebcd6;
+    border: 3px solid #11609f;
+
+    font-size: 1.5rem;
+}
+
+
+

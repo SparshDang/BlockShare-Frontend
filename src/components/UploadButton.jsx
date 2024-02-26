@@ -1,10 +1,18 @@
-import React from 'react'
+import React, { useRef } from 'react'
 
-export default function UploadButton({retrieveImage}) {
-    
-    
+import style from './UploadButton.module.css'
 
+export default function UploadButton({retrieveImage, file}) {  
+    const inputRef = useRef();  
+    const onClick = () => {
+        inputRef.current.click();
+    }
     return (
-        <input type="file" name="file" id="file" onChange={retrieveImage} />
+        <>
+        <div className={style.main} onClick={onClick}>
+            {file ? file.name : "Choose File"}
+        </div>
+        <input type="file" name="file" id="file" onChange={retrieveImage} className={style.input} ref={inputRef} />
+        </>
     )
 }
