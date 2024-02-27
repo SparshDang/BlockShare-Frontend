@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 
-import UploadButton from "./UploadButton";
+import { AnimatePresence } from "framer-motion";
 
-import style from "./form.module.css";
-import Loader from "./Loader";
+import FileInput from "./utils/FileInput";
+import Form from "./utils/Form";
+import Loader from "./utils/Loader";
+import Card from "./utils/Card";
+import Overlay from "./utils/Overlay";
+
 
 const uplaodingReducer = (state, action) => {
   if (action.type === "UPLOADING") {
@@ -21,29 +25,51 @@ const uplaodingReducer = (state, action) => {
       isUploading: false,
       status: "SUCCESS",
     };
+  } else {
+    return {
+      isUploading: false,
+      status: null,
+    };
   }
 };
 
-export default function UploadForm({ contract, classNames }) {
+export default function UploadForm({ contract }) {
+  const [uploadState, uploadReducer] = useReducer(uplaodingReducer, {
+    isUploading: false,
+    status: null,
+  });
+
   const [file, setFile] = useState();
-  const [recieverAddress, setRecieverAddress] = useState();
-  const [uploading, setUploading] = useState(false);
+  const [recieverAddress, setRecieverAddress] = useState("");
 
   const uploadData = async (event) => {
     event.preventDefault();
 
     if (file) {
-      setUploading(true);
+      uploadReducer({
+        type: "UPLOADING",
+      });
       try {
         const formData = new FormData();
         formData.append("file", file);
         const res = await uploadDataToPinata(formData);
         await sendDataToContract(file.name, res);
-        alert("Data Uploaded");
+        uploadReducer({
+          type: "SUCCESS",
+        });
+        resetFields();
       } catch (e) {
-        console.log(e);
+        uploadReducer({
+          type: "FAIL",
+        });
       }
-      setUploading(false);
+      setTimeout(
+        () =>
+          uploadReducer({
+            type: "RESET",
+          }),
+        2000
+      );
     }
   };
 
@@ -72,18 +98,23 @@ export default function UploadForm({ contract, classNames }) {
 
   const retrieveImage = (event) => {
     const data = event.target.files[0];
-    console.log(data);
     const reader = new window.FileReader();
     reader.readAsArrayBuffer(data);
     reader.onloadend = () => {
       setFile(data);
     };
   };
+
+  const resetFields = () => {
+    setFile(null);
+    setRecieverAddress("");
+  }
+
   return (
-    <>
+    <Card>
       <h2>Upload Files</h2>
-      <form onSubmit={uploadData} className={style.form}>
-        <UploadButton retrieveImage={retrieveImage} file={file} />
+      <Form onSubmit={uploadData}>
+        <FileInput retrieveImage={retrieveImage} file={file} />
         <label>Enter Reciever Address:</label>
         <input
           type="text"
@@ -95,13 +126,24 @@ export default function UploadForm({ contract, classNames }) {
         />
         <button
           type="submit"
-          className={style.submit__btn}
-          disabled={!file && !uploading}
+          disabled={!file && !uploadState.status && !(recieverAddress.trim().length === 0)}
         >
           Upload Data
         </button>
-      </form>
-      {uploading && <Loader />}
-    </>
+      </Form>
+      <AnimatePresence>
+        {uploadState.isUploading && <Loader />}
+        {uploadState.status === "SUCCESS" && (
+          <Overlay>
+            <p>File Uploaded Successfully</p>
+          </Overlay>
+        )}
+        {uploadState.status === "FAIL" && (
+          <Overlay>
+            <p>File Upload Failed</p>
+          </Overlay>
+        )}
+      </AnimatePresence>
+    </Card>
   );
 }

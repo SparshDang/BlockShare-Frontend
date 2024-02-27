@@ -1,17 +1,3 @@
-.form{
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    position: relative;
-}
-
-.submit__btn{
-    align-self: flex-end;
-    justify-self: flex-end;
-    width: 8rem;
-    padding: 0.5rem;
-}
-
 .files__container{
     text-align: center;
     overflow-y: scroll;
@@ -22,6 +8,7 @@
     grid-template-columns: repeat(2,1fr);
     flex-direction: column;
     gap: 10px;
+    margin: 10px auto;
 }
 
 .file{
@@ -34,10 +21,8 @@
     height: 5rem;
     display: grid;
     place-items: center;
-    overflow-y: scroll;
-
 }
 
-.reterieve__data{
-    display: flex;
+.file:hover{
+    background: linear-gradient(rgba(0,0,0,0.3),rgba(0,0,0,0.3));
 }

@@ -1,8 +1,8 @@
 import React, { useRef } from 'react'
 
-import style from './UploadButton.module.css'
+import style from './FileInput.module.css'
 
-export default function UploadButton({retrieveImage, file}) {  
+export default function FileInput({retrieveImage, file}) {  
     const inputRef = useRef();  
     const onClick = () => {
         inputRef.current.click();
