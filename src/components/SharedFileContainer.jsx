@@ -1,5 +1,6 @@
 import React, { useReducer, useState } from "react";
 import { motion } from "framer-motion";
+import { isAddress } from "web3-validator";
 
 import Card from "./utils/Card";
 import Form from "./utils/Form";
@@ -71,9 +72,17 @@ export default function SharedFileContainer({ contract }) {
   });
 
   const [formDisable, setFormDisabled] = useState(false);
+  const [isAddressWrong, setAddressIsWrong] = useState(false);
+
 
   const getData = async (event) => {
     event?.preventDefault();
+    if (isAddress(address)) {
+      setAddressIsWrong(false);
+    } else {
+      setAddressIsWrong(true);
+      return;
+    }
     try {
       const data_ = await contract.sharedFiles(address);
       filesDispach({ type: "FETCHED", data: data_ });
@@ -106,10 +115,10 @@ export default function SharedFileContainer({ contract }) {
   };
 
   const resetForm = () => {
-    filesDispach({type:"RESET"});
-    setFormDisabled(false)
+    filesDispach({ type: "RESET" });
+    setFormDisabled(false);
     setAddress("");
-  }
+  };
 
   return (
     <Card className={style.main}>
@@ -123,13 +132,12 @@ export default function SharedFileContainer({ contract }) {
           className={style.input}
           value={address}
           disabled={formDisable}
+          style={{
+            borderColor: !isAddressWrong ? "#eff8f9" : "red",
+          }}
         />
         <ButtonsContainer>
-          <button
-            type="reset"
-            disabled={!formDisable}
-            onClick={resetForm}
-          >
+          <button type="reset" disabled={!formDisable} onClick={resetForm}>
             Reset State
           </button>
           <button type="submit" disabled={formDisable}>

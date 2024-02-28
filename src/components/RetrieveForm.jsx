@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { isAddress } from "web3-validator";
 import React from "react";
 
 import Card from "./utils/Card";
@@ -11,16 +12,26 @@ export default function RetrieveForm({ contract }) {
   const [data, setData] = useState([]);
   const [initial, setInitial ] = useState(true);
   const [formDisabled, setFormDisabled] = useState(false);
+  const [isAddressWrong, setAddressIsWrong] = useState(false);
+
 
   const resetForm = () => {
     setData([]);
     setAddress("");
     setFormDisabled(false);
     setInitial(true);
+    setAddressIsWrong(false)
   };
 
   const retrieve = async (event) => {
     event.preventDefault();
+    if (isAddress(address)){
+      setAddressIsWrong(false)
+    }
+    else{
+      setAddressIsWrong(true);
+      return
+    }
     const data = await contract.getFiles(address);
     setData(data);
     setFormDisabled(true);
@@ -38,6 +49,9 @@ export default function RetrieveForm({ contract }) {
           onChange={(event) => setAddress(() => event.target.value)}
           value={address}
           disabled={formDisabled}
+          style={{
+            borderColor: !isAddressWrong ?  "#eff8f9" : "red"
+          }}
         />
         <ButtonsContainer>
           <button type="reset" disabled={!formDisabled} onClick={resetForm}>

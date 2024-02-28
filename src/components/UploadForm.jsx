@@ -1,4 +1,5 @@
 import React, { useReducer, useState } from "react";
+import { isAddress } from "web3-validator";
 
 import { AnimatePresence } from "framer-motion";
 
@@ -7,7 +8,6 @@ import Form from "./utils/Form";
 import Loader from "./utils/Loader";
 import Card from "./utils/Card";
 import Overlay from "./utils/Overlay";
-
 
 const uplaodingReducer = (state, action) => {
   if (action.type === "UPLOADING") {
@@ -25,7 +25,7 @@ const uplaodingReducer = (state, action) => {
       isUploading: false,
       status: "SUCCESS",
     };
-  } else if (action.type === 'RESET') {
+  } else if (action.type === "RESET") {
     return {
       isUploading: false,
       status: null,
@@ -42,9 +42,16 @@ export default function UploadForm({ contract }) {
 
   const [file, setFile] = useState();
   const [recieverAddress, setRecieverAddress] = useState("");
+  const [isAddressWrong, setAddressIsWrong] = useState(false);
 
   const uploadData = async (event) => {
     event.preventDefault();
+    if (!isAddress(recieverAddress)) {
+      setAddressIsWrong(true);
+      return;
+    } else {
+      setAddressIsWrong(false);
+    }
 
     if (file) {
       uploadReducer({
@@ -109,7 +116,7 @@ export default function UploadForm({ contract }) {
   const resetFields = () => {
     setFile(null);
     setRecieverAddress("");
-  }
+  };
 
   return (
     <Card>
@@ -124,10 +131,13 @@ export default function UploadForm({ contract }) {
           placeholder="Address"
           onChange={(event) => setRecieverAddress(event.target.value)}
           value={recieverAddress}
+          style={{
+            borderColor: !isAddressWrong ?  "#eff8f9" : "red"
+          }}
         />
         <button
           type="submit"
-          disabled={!file && !uploadState.status && !(recieverAddress.trim().length === 0)}
+          disabled={!file && !uploadState.status && recieverAddress === ""}
         >
           Upload Data
         </button>
