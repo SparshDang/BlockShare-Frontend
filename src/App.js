@@ -11,7 +11,7 @@ import UploadForm from './components/UploadForm';
 import style from "./app.module.css";
 
 function App() {
-  const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+  const contractAddress = "0xfe61022C7582e98Bd2415d1acaF8BA1f10A87865";
 
   const [account, setAccount] = useState();
   const [contract, setContract] = useState();
