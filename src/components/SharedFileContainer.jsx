@@ -1,5 +1,6 @@
 import React, { useReducer, useState } from "react";
 import { motion } from "framer-motion";
+import { MdDeleteOutline } from "react-icons/md";
 import { isAddress } from "web3-validator";
 
 import Card from "./utils/Card";
@@ -74,7 +75,6 @@ export default function SharedFileContainer({ contract }) {
   const [formDisable, setFormDisabled] = useState(false);
   const [isAddressWrong, setAddressIsWrong] = useState(false);
 
-
   const getData = async (event) => {
     event?.preventDefault();
     if (isAddress(address)) {
@@ -122,7 +122,7 @@ export default function SharedFileContainer({ contract }) {
 
   return (
     <Card className={style.main}>
-      <h2>Get Shared Files</h2>
+      <h2>Delete Shared Files</h2>
       <Form className={style.form} onSubmit={getData}>
         <label>Enter Address:</label>
         <input
@@ -150,18 +150,21 @@ export default function SharedFileContainer({ contract }) {
           <h3>Shared files:</h3>
           <motion.div
             className={style2.files}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
           >
             {filesState.data.map((item, i) => {
               return (
-                <div
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   key={i}
                   className={`${style2.file} ${style.file}`}
                   onClick={() => deleteFile(item.IpfsHash)}
                 >
-                  {item[0]}
-                </div>
+                  {item[0]}{" "}
+                  <p>
+                    <MdDeleteOutline />
+                  </p>
+                </motion.div>
               );
             })}
           </motion.div>

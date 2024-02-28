@@ -16,7 +16,16 @@
     gap: 1rem;
     margin: 1rem;
     flex: 1;
-    /* min-height: 0; */
+}
+
+@media (max-width: 480px) {
+    .main{
+        grid-template-columns: 1fr;
+    }
+
+    .main >div:last-child{
+        grid-column: 1;
+    }
 }
 
 .secondary__text{

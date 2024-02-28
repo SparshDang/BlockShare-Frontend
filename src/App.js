@@ -20,7 +20,7 @@ function App() {
   const connectAccount = async () => {
     const provider = new ethers.BrowserProvider(window.ethereum);
 
-    // window.ethereum.on("chainChanged", () => window.location.reload());
+    window.ethereum.on("chainChanged", () => window.location.reload());
     window.ethereum.on("accountsChanged", () => window.location.reload());
 
     if (provider) {
