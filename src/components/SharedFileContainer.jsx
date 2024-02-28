@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useReducer, useState } from "react";
 import { motion } from "framer-motion";
 
 import Card from "./utils/Card";
@@ -9,24 +9,96 @@ import Overlay from "./utils/Overlay";
 import style from "./SharedFileContainer.module.css";
 import style2 from "./FilesContainer.module.css";
 
+const fetchFileReducer = (state, action) => {
+  if (action.type === "FETCHING") {
+    return {
+      isFetching: true,
+      isEmpty: false,
+      data: [],
+      isError: false,
+      initial: true,
+    };
+  } else if (action.type === "FETCHED") {
+    return {
+      isFetching: false,
+      isEmpty: action.data.length === 0,
+      data: action.data,
+      isError: action.error,
+      initial: false,
+    };
+  } else if (action.type === "RESET") {
+    return {
+      isFetching: false,
+      isEmpty: true,
+      data: [],
+      isError: false,
+      initial: true,
+    };
+  } else {
+    return state;
+  }
+};
+
+const deleteFileReducer = (state, action) => {
+  if (action.type === "DELETING") {
+    return {
+      isDeleting: true,
+      isError: false,
+    };
+  } else if (action.type === "DELETED") {
+    return {
+      isDeleting: false,
+      isError: action.error,
+    };
+  } else if (action.type === "RESET") {
+    return { isDeleting: false, isError: false };
+  }
+};
+
 export default function SharedFileContainer({ contract }) {
   const [address, setAddress] = useState();
-  const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [filesState, filesDispach] = useReducer(fetchFileReducer, {
+    isFetching: false,
+    isEmpty: true,
+    data: [],
+    isError: false,
+    initial: true,
+  });
+  const [deleteState, deleteDispach] = useReducer(deleteFileReducer, {
+    isDeleting: false,
+    isError: false,
+  });
 
   const getData = async (event) => {
-    event.preventDefault();
-    const data_ = await contract.sharedFiles(address);
-    setData(() => data_);
+    event?.preventDefault();
+    try {
+      const data_ = await contract.sharedFiles(address);
+      filesDispach({ type: "FETCHED", data: data_ });
+    } catch (e) {
+      filesDispach({ type: "FETCHED", error: true, data: [] });
+    }
   };
 
   const deleteFile = async (ipfsHash) => {
-    setIsLoading(true);
-    const transaction = await contract.deleteFile(address, ipfsHash);
-    await transaction.wait();
-    setIsLoading(false);
-    const data_ = await contract.sharedFiles(address);
-    setData(() => data_);
+    deleteDispach({
+      type: "DELETING",
+    });
+    try {
+      const transaction = await contract.deleteFile(address, ipfsHash);
+      await transaction.wait();
+      deleteDispach({
+        type: "DELETED",
+      });
+    } catch (e) {
+      deleteDispach({
+        type: "DELETED",
+        error: true,
+      });
+      setTimeout(() => {
+        deleteDispach({ type: "RESET" });
+      }, 2000);
+    }
+    await getData();
   };
 
   return (
@@ -44,7 +116,7 @@ export default function SharedFileContainer({ contract }) {
           Get Files
         </button>
       </Form>
-      {data.length !== 0 && (
+      {!filesState.isEmpty && (
         <div className={style2.files__container}>
           <h3>Shared files:</h3>
           <motion.div
@@ -52,7 +124,7 @@ export default function SharedFileContainer({ contract }) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            {data.map((item, i) => {
+            {filesState.data.map((item, i) => {
               return (
                 <div
                   key={i}
@@ -60,14 +132,21 @@ export default function SharedFileContainer({ contract }) {
                   onClick={() => deleteFile(item.IpfsHash)}
                 >
                   {item[0]}
-                  
                 </div>
               );
             })}
           </motion.div>
         </div>
       )}
-      {isLoading && <Loader />}
+      {filesState.isEmpty && !filesState.initial && (
+        <p>No Files Shared with this address</p>
+      )}
+      {deleteState.isDeleting && <Loader />}
+      {deleteState.isError && (
+        <Overlay>
+          <p> An Error Occured</p>
+        </Overlay>
+      )}
     </Card>
   );
 }

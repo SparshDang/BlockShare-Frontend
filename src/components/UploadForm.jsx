@@ -25,12 +25,13 @@ const uplaodingReducer = (state, action) => {
       isUploading: false,
       status: "SUCCESS",
     };
-  } else {
+  } else if (action.type === 'RESET') {
     return {
       isUploading: false,
       status: null,
     };
   }
+  return state;
 };
 
 export default function UploadForm({ contract }) {
