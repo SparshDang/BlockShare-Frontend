@@ -15,7 +15,8 @@
     grid-template-rows: repeat(2,1fr);
     gap: 1rem;
     margin: 1rem;
-    max-height: 100vh;
+    flex: 1;
+    min-height: 0;
 }
 
 .secondary__text{

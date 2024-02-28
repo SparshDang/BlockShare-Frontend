@@ -1,6 +1,8 @@
 .files__container{
     text-align: center;
     overflow-y: scroll;
+    /* margin: 20px 10px; */
+    margin-bottom: 10px;
 }
 
 .files{

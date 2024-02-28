@@ -5,6 +5,7 @@ import Card from "./utils/Card";
 import Form from "./utils/Form";
 import Loader from "./utils/Loader";
 import Overlay from "./utils/Overlay";
+import ButtonsContainer from "./ButtonsContainer";
 
 import style from "./SharedFileContainer.module.css";
 import style2 from "./FilesContainer.module.css";
@@ -56,7 +57,7 @@ const deleteFileReducer = (state, action) => {
 };
 
 export default function SharedFileContainer({ contract }) {
-  const [address, setAddress] = useState();
+  const [address, setAddress] = useState("");
   const [filesState, filesDispach] = useReducer(fetchFileReducer, {
     isFetching: false,
     isEmpty: true,
@@ -69,11 +70,14 @@ export default function SharedFileContainer({ contract }) {
     isError: false,
   });
 
+  const [formDisable, setFormDisabled] = useState(false);
+
   const getData = async (event) => {
     event?.preventDefault();
     try {
       const data_ = await contract.sharedFiles(address);
       filesDispach({ type: "FETCHED", data: data_ });
+      setFormDisabled(true);
     } catch (e) {
       filesDispach({ type: "FETCHED", error: true, data: [] });
     }
@@ -101,6 +105,12 @@ export default function SharedFileContainer({ contract }) {
     await getData();
   };
 
+  const resetForm = () => {
+    filesDispach({type:"RESET"});
+    setFormDisabled(false)
+    setAddress("");
+  }
+
   return (
     <Card className={style.main}>
       <h2>Get Shared Files</h2>
@@ -111,10 +121,21 @@ export default function SharedFileContainer({ contract }) {
           placeholder="Address"
           onChange={(event) => setAddress(() => event.target.value)}
           className={style.input}
+          value={address}
+          disabled={formDisable}
         />
-        <button type="submit" className={style.submit__btn}>
-          Get Files
-        </button>
+        <ButtonsContainer>
+          <button
+            type="reset"
+            disabled={!formDisable}
+            onClick={resetForm}
+          >
+            Reset State
+          </button>
+          <button type="submit" disabled={formDisable}>
+            Get Files
+          </button>
+        </ButtonsContainer>
       </Form>
       {!filesState.isEmpty && (
         <div className={style2.files__container}>
