@@ -5,7 +5,7 @@ import style from "./FilesContainer.module.css";
 
 export default function FilesContainer({ data }) {
   const downloadFile = async (hash, name) => {
-    const blob = getBlob(hash);
+    const blob = await getBlob(hash);
     const blobUrl = URL.createObjectURL(blob);
     
     const link = document.createElement("a");
@@ -25,7 +25,8 @@ export default function FilesContainer({ data }) {
   const getBlob = async (hash) => {
     const url = `https://orange-gigantic-wren-85.mypinata.cloud/ipfs/${hash}?pinataGatewayToken=${process.env.REACT_APP_PINATA_GATEWAY_KEY}`;
     const res = await fetch(url);
-    return await res.blob();
+    const blob =  await res.blob();
+    return blob
   }
 
 
