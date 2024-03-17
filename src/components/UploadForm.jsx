@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useState, useContext } from "react";
 import { isAddress } from "web3-validator";
 
 import { AnimatePresence } from "framer-motion";
@@ -8,6 +8,8 @@ import Form from "./utils/Form";
 import Loader from "./utils/Loader";
 import Card from "./utils/Card";
 import Overlay from "./utils/Overlay";
+import InputField from "./utils/InputField";
+import ContractContext from "../store/ContractContext";
 
 const uplaodingReducer = (state, action) => {
   if (action.type === "UPLOADING") {
@@ -34,12 +36,13 @@ const uplaodingReducer = (state, action) => {
   return state;
 };
 
-export default function UploadForm({ contract }) {
+export default function UploadForm() {
   const [uploadState, uploadReducer] = useReducer(uplaodingReducer, {
     isUploading: false,
     status: null,
   });
 
+  const contract = useContext(ContractContext);
   const [file, setFile] = useState();
   const [recieverAddress, setRecieverAddress] = useState("");
   const [isAddressWrong, setAddressIsWrong] = useState(false);
@@ -96,7 +99,7 @@ export default function UploadForm({ contract }) {
   const sendDataToContract = async (fileName, res) => {
     const data = await res.json();
 
-    const transaction = await contract.shareFile(
+    const transaction = await contract.contract.shareFile(
       recieverAddress,
       fileName,
       `ipfs://${data.IpfsHash}`
@@ -124,16 +127,12 @@ export default function UploadForm({ contract }) {
       <Form onSubmit={uploadData}>
         <FileInput retrieveImage={retrieveImage} file={file} />
         <label>Enter Reciever Address:</label>
-        <input
-          type="text"
-          name="address"
-          id="address"
+
+        <InputField
           placeholder="Address"
-          onChange={(event) => setRecieverAddress(event.target.value)}
+          onChangeHandler={setRecieverAddress}
           value={recieverAddress}
-          style={{
-            borderColor: !isAddressWrong ?  "#eff8f9" : "red"
-          }}
+          isAddressWrong={isAddressWrong}
         />
         <button
           type="submit"

@@ -1,4 +1,4 @@
-import React, { useReducer, useState } from "react";
+import React, { useReducer, useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { MdDeleteOutline } from "react-icons/md";
 import { isAddress } from "web3-validator";
@@ -8,9 +8,12 @@ import Form from "./utils/Form";
 import Loader from "./utils/Loader";
 import Overlay from "./utils/Overlay";
 import ButtonsContainer from "./ButtonsContainer";
+import InputField from "./utils/InputField";
 
 import style from "./SharedFileContainer.module.css";
 import style2 from "./FilesContainer.module.css";
+
+import ContractContext from "../store/ContractContext";
 
 const fetchFileReducer = (state, action) => {
   if (action.type === "FETCHING") {
@@ -58,7 +61,8 @@ const deleteFileReducer = (state, action) => {
   }
 };
 
-export default function SharedFileContainer({ contract }) {
+export default function SharedFileContainer() {
+  const contract = useContext(ContractContext);
   const [address, setAddress] = useState("");
   const [filesState, filesDispach] = useReducer(fetchFileReducer, {
     isFetching: false,
@@ -84,7 +88,7 @@ export default function SharedFileContainer({ contract }) {
       return;
     }
     try {
-      const data_ = await contract.sharedFiles(address);
+      const data_ = await contract.contract.sharedFiles(address);
       filesDispach({ type: "FETCHED", data: data_ });
       setFormDisabled(true);
     } catch (e) {
@@ -97,7 +101,7 @@ export default function SharedFileContainer({ contract }) {
       type: "DELETING",
     });
     try {
-      const transaction = await contract.deleteFile(address, ipfsHash);
+      const transaction = await contract.contract.deleteFile(address, ipfsHash);
       await transaction.wait();
       deleteDispach({
         type: "DELETED",
@@ -125,16 +129,12 @@ export default function SharedFileContainer({ contract }) {
       <h2>Delete Shared Files</h2>
       <Form className={style.form} onSubmit={getData}>
         <label>Enter Address:</label>
-        <input
-          type="text"
+        <InputField
           placeholder="Address"
-          onChange={(event) => setAddress(() => event.target.value)}
-          className={style.input}
+          onChangeHandler={setAddress}
           value={address}
-          disabled={formDisable}
-          style={{
-            borderColor: !isAddressWrong ? "#eff8f9" : "red",
-          }}
+          formDisable={formDisable}
+          isAddressWrong={isAddressWrong}
         />
         <ButtonsContainer>
           <button type="reset" disabled={!formDisable} onClick={resetForm}>
@@ -148,9 +148,7 @@ export default function SharedFileContainer({ contract }) {
       {!filesState.isEmpty && (
         <div className={style2.files__container}>
           <h3>Shared files:</h3>
-          <motion.div
-            className={style2.files}
-          >
+          <motion.div className={style2.files}>
             {filesState.data.map((item, i) => {
               return (
                 <motion.div
@@ -160,7 +158,7 @@ export default function SharedFileContainer({ contract }) {
                   className={`${style2.file} ${style.file}`}
                   onClick={() => deleteFile(item.IpfsHash)}
                 >
-                  {item[0]}{" "}
+                  {item[0]}
                   <p>
                     <MdDeleteOutline />
                   </p>
