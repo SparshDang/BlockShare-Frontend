@@ -11,6 +11,7 @@ import FriendsModal from "./components/FriendsModal";
 import ContractContext from "./store/ContractContext";
 
 import style from "./app.module.css";
+import NotificationsDropdown from "./components/NotificationsDropdown";
 
 function App() {
   const contract = useContext(ContractContext);
@@ -38,6 +39,8 @@ function App() {
         <SharedFileContainer />
       </main>
       <FriendsDropdown toggleFunction={toggleAddFriendModal}/>
+      <NotificationsDropdown/>
+
       <AnimatePresence>
         {!contract.isConnected && (
           <Overlay className={style.overlay} onClick={contract.connectAccount}>

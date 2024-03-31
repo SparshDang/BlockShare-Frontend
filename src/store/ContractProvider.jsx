@@ -10,8 +10,8 @@ export default function ContractProvider({children}) {
     const [account, setAccount] = useState();
     const [isConnected, setIsConnected] = useState();
 
-    // const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-    const contractAddress = "0xEa40749cfc271cFFD4904F14b9b666391a9fafD9";
+    const contractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+    // const contractAddress = "0xEa40749cfc271cFFD4904F14b9b666391a9fafD9";
 
     const connectAccount = async () => {
         const provider = new ethers.BrowserProvider(window.ethereum);
@@ -31,12 +31,7 @@ export default function ContractProvider({children}) {
           console.log("No metamask");
         }
     }
-    // account : null,
-    //     isConnected : false,
-    //     connectAccount : () => {},
-    //     getFriends : () => {},
-    //     addFriends : (name, address) => {},
-
+     
   return (
     <ContractContext.Provider value={{
         contract : contract,

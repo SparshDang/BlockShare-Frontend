@@ -6,7 +6,6 @@ const ContractContext = React.createContext(
         account : null,
         isConnected : false,
         connectAccount : () => {},
-        getFriends : () => {},
     }
 )
 export default ContractContext;
